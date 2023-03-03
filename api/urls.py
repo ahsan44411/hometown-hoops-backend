@@ -4,12 +4,9 @@ from django.urls import path
 app_name = 'api'
 
 urlpatterns = [
-    path('get-tournament/', GetTournamentView.as_view()),
-    path('create-tournament/', CreateTournamentView.as_view()),
+    path('tournaments/', TournamentView.as_view()),
 
-    path('get-camps/', GetCampsView.as_view()),
-    path('create-camps/', CreateCampsView.as_view()),
+    path('camps/', CampsView.as_view()),
 
-    path('get-leagues/', GetLeaguesView.as_view()),
-    # path('create-leagues/', CreateLeaguesView.as_view()),
+    path('leagues/', LeaguesView.as_view()),
 ]

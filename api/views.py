@@ -6,7 +6,7 @@ from api.serializers import TournamentsSerializer, CampsSerializer, LeaguesSeria
 from api.models import Tournaments, Camps, Leagues, TournamentsRegister, CampsRegister, LeaguesRegister
 
 
-class GetTournamentView(APIView):
+class TournamentView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -14,10 +14,6 @@ class GetTournamentView(APIView):
         queryset = Tournaments.objects.filter(openDate__lte=today, closeDate__gte=today)
         response = TournamentsSerializer(queryset, many=True).data
         return Response(data=response, status=200)
-
-
-class CreateTournamentView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
@@ -34,7 +30,7 @@ class CreateTournamentView(APIView):
             return Response(data="Failed to register", status=400)
 
 
-class GetCampsView(APIView):
+class CampsView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -42,10 +38,6 @@ class GetCampsView(APIView):
         queryset = Camps.objects.filter(openDate__lte=today, closeDate__gte=today)
         response = CampsSerializer(queryset, many=True).data
         return Response(data=response, status=200)
-
-
-class CreateCampsView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
@@ -62,7 +54,7 @@ class CreateCampsView(APIView):
             return Response(data="Failed to register", status=400)
 
 
-class GetLeaguesView(APIView):
+class LeaguesView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -70,10 +62,6 @@ class GetLeaguesView(APIView):
         queryset = Leagues.objects.filter(openDate__lte=today, closeDate__gte=today)
         response = LeaguesSerializer(queryset, many=True).data
         return Response(data=response, status=200)
-
-
-class CreateLeaguesView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
