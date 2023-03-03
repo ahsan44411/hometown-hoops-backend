@@ -41,6 +41,7 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     full_name = models.CharField(max_length=150, null=True, blank=True, default="")
+    phone_number = models.CharField(max_length=150, null=True, blank=True, default="")
 
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)

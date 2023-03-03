@@ -13,7 +13,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             'email',
             'password1',
             'password2',
-            'full_name'
+            'full_name',
+            'phone_number'
         )
 
     def save(self):
@@ -45,4 +46,5 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'id',
             'email',
             'full_name',
+            'phone_number'
         )

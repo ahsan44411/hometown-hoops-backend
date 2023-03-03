@@ -9,11 +9,20 @@ from accounts.models import CustomUser
 class Authentication(BaseAuthentication):
 
     def authenticate(self, request):
+        # data = self.validate_request(request.headers)
+        # if not data:
+        #     return None, None
+        #
+        # return self.get_user(data['user_id']), None
         data = self.validate_request(request.headers)
         if not data:
-            return None, None
+            return None
 
-        return self.get_user(data['user_id']), None
+        user = self.get_user(data['user_id'])
+        if user is None:
+            return None
+
+        return user, None
 
     def get_user(self, user_id):
         try:

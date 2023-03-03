@@ -18,6 +18,7 @@ from accounts.serializers import RegisterSerializer, LoginSerializer, CustomUser
 
 User = get_user_model()
 
+domain = 'http://localhost:3000/'
 
 def get_random(length):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
@@ -84,7 +85,7 @@ class ChangePasswordView(APIView):
     def send_change_password_email(self, email):
 
         context = {
-            'domain': '',
+            'domain': domain,
             'endpoint': 'confirm-change-password/',
             'email': urlsafe_base64_encode(force_bytes(email)),
         }
@@ -96,9 +97,9 @@ class ChangePasswordView(APIView):
         email_template = email_template.render(context)
 
         msg = EmailMessage(
-            'Finqube || Change Password',
+            'Hometown hoops || Change Password',
             email_template,
-            "noreply@finqube.io",
+            "ahsan44411@gmail.com",
             [email, ]
         )
 
@@ -106,9 +107,10 @@ class ChangePasswordView(APIView):
 
         msg.send()
 
-    def get(self, request):
+    def post(self, request):
         try:
-            self.send_change_password_email(request.user.email)
+            email = request.data['email']
+            self.send_change_password_email(email)
             return Response({'message': 'Reset password link sent to your email'}, status=200)
         except Exception as e:
             print(e)
