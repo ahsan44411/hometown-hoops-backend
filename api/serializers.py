@@ -23,6 +23,18 @@ class TournamentsSerializer(serializers.ModelSerializer):
         return {**response, "rules": rules}
 
 
+class TournamentsRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TournamentsRegister
+        fields = "__all__"
+
+
+class LeagueRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeaguesRegister
+        fields = "__all__"
+
+
 class CampsRulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampsRules
@@ -42,6 +54,27 @@ class CampsSerializer(serializers.ModelSerializer):
         ).data
 
         return {**response, "rules": rules}
+
+
+class CampsChildRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CampsChildRegister
+        fields = "__all__"
+
+
+class CampRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CampsRegister
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+
+        response['children'] = CampsChildRegisterSerializer(
+            CampsChildRegister.objects.filter(camp_register_id=response['id']), many=True
+        ).data
+
+        return response
 
 
 class LeaguesRulesSerializer(serializers.ModelSerializer):

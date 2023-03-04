@@ -73,8 +73,8 @@ class CampsRegister(models.Model):
 
 class CampsChildRegister(models.Model):
     camp_register = models.ForeignKey(CampsRegister, on_delete=models.CASCADE)
-    child_full_name = models.CharField(max_length=1000, null=True, blank=True)
-    child_age = models.IntegerField(null=True, blank=True)
+    name = models.CharField(max_length=1000, null=True, blank=True)
+    age = models.IntegerField(null=True, blank=True)
 
 
 class Leagues(models.Model):

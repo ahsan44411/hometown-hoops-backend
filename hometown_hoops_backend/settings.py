@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'accounts',
     'api',
     'corsheaders',
+    'nested_inline',
 ]
 
 MIDDLEWARE = [
