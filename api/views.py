@@ -162,9 +162,11 @@ class GetLeagueSchedule(APIView):
 
         img = LeagueScheduleSerializer(LeagueSchedule.objects.filter(league=id).last()).data['img']
 
-        teams = LeagueTeamStatsSchedule(LeagueTeamStats.objects.filter(leagues_register__league=id), many=True).data
+        league = Leagues.objects.filter().last()
 
-        data = {"img": img, "teams": teams}
+        teams = LeagueTeamStatsSchedule(LeagueTeamStats.objects.filter(leagues_register__league=id).order_by('-wins'), many=True).data
+
+        data = {"name": league.name, "img": img, "teams": teams}
 
         return Response(data=data, status=200)
 
