@@ -1,7 +1,9 @@
 asgiref==3.6.0
 Django==4.1.7
 django-cors-headers==3.14.0
+django-model-stats==0.0.2
 django-nested-inline==0.4.5
+django-pgstats==1.0.8
 djangorestframework==3.14.0
 Pillow==9.4.0
 PyJWT==2.6.0
