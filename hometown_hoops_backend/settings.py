@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'api',
     'corsheaders',
     'nested_inline',
+    'model_stats',
+    'pgstats'
 ]
 
 MIDDLEWARE = [
@@ -149,5 +151,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'ahsan44411@gmail.com'
-EMAIL_HOST_PASSWORD = 'qnhrmxsefaquwhrr'
+EMAIL_HOST_USER = 'derek.soccer8@gmail.com'
+EMAIL_HOST_PASSWORD = 'xbufdpaqtbbhnemt'

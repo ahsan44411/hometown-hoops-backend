@@ -10,5 +10,8 @@ urlpatterns = [
 
     path('get-register/', GetRegisterView.as_view()),
     path('create-register/', CreateRegisterView.as_view()),
-    path('edit-register/', EditRegisterView.as_view())
+    path('edit-register/', EditRegisterView.as_view()),
+
+    path('get-league-schedule/', GetLeagueSchedule.as_view()),
+    path('get-team-stats/', GetTeamStats.as_view())
 ]

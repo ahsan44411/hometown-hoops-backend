@@ -1,4 +1,5 @@
 from api.models import *
+from django.utils import timezone
 from rest_framework import serializers
 
 
@@ -91,8 +92,38 @@ class LeaguesSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
 
+        league = Leagues.objects.filter(id=response['id']).last()
+        today = timezone.now().date()
+
+        if today > league.closeDate:
+            response['closed'] = True
+        else:
+            response['closed'] = False
+
         rules = LeaguesRulesSerializer(
             LeaguesRules.objects.filter(league__id=response['id']), many=True
         ).data
 
         return {**response, "rules": rules}
+
+
+class LeagueScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeagueSchedule
+        fields = "__all__"
+
+
+class LeagueTeamStatsSchedule(serializers.ModelSerializer):
+    leagues_register = LeagueRegisterSerializer()
+
+    class Meta:
+        model = LeagueTeamStats
+        fields = "__all__"
+
+
+class LeagueTeamMembersSerializer(serializers.ModelSerializer):
+    leagues_register = LeagueRegisterSerializer()
+
+    class Meta:
+        model = LeagueTeamMembers
+        fields = "__all__"

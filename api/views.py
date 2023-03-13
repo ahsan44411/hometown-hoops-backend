@@ -1,9 +1,11 @@
+from django.db.models import Count
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from api.serializers import TournamentsSerializer, CampsSerializer, LeaguesSerializer, TournamentsRegisterSerializer, LeagueRegisterSerializer, CampRegisterSerializer
-from api.models import Tournaments, Camps, Leagues, TournamentsRegister, CampsRegister, LeaguesRegister, CampsChildRegister
+from api.models import Tournaments, Camps, Leagues, TournamentsRegister, CampsRegister, LeaguesRegister, CampsChildRegister, LeagueSchedule, LeagueTeamStats, LeagueTeamMembers
+from api.serializers import TournamentsSerializer, CampsSerializer, LeaguesSerializer, TournamentsRegisterSerializer, LeagueRegisterSerializer, CampRegisterSerializer, \
+    LeagueScheduleSerializer, LeagueTeamStatsSchedule, LeagueTeamMembersSerializer
 
 
 class TournamentView(APIView):
@@ -26,11 +28,28 @@ class LeaguesView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        today = timezone.now().date()
-        queryset = Leagues.objects.filter(openDate__lte=today, closeDate__gte=today)
+        # today = timezone.now().date()
+        # queryset = Leagues.objects.filter(openDate__lte=today, closeDate__gte=today)
+        queryset = Leagues.objects.all()
         response = LeaguesSerializer(queryset, many=True).data
         for data in response:
             if request.user.is_authenticated and LeaguesRegister.objects.filter(user=request.user, league_id=data['id']):
+                data['edit'] = True
+            else:
+                data['edit'] = False
+
+        return Response(data=response, status=200)
+
+
+class CampsView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        today = timezone.now().date()
+        queryset = Camps.objects.filter(openDate__lte=today, closeDate__gte=today)
+        response = CampsSerializer(queryset, many=True).data
+        for data in response:
+            if request.user.is_authenticated and CampsRegister.objects.filter(user=request.user, camp_id=data['id']):
                 data['edit'] = True
             else:
                 data['edit'] = False
@@ -82,7 +101,7 @@ class CreateRegisterView(APIView):
             camp_register = CampsRegister.objects.create(user=user, camp=Camps.objects.get(id=id), **data)
             child_reg_arr = []
             for child in children:
-                child_reg_arr.append(CampsChildRegister(camp_register=camp_register, **child))
+                child_reg_arr.append(CampsChildRegister(camp_register=camp_register, name=child['name'], age=child['age']))
 
             CampsChildRegister.objects.bulk_create(child_reg_arr)
 
@@ -133,43 +152,57 @@ class EditRegisterView(APIView):
     #     return Response({"error": "Could not save information"}, status=500)
 
 
-class CampsView(APIView):
+class GetLeagueSchedule(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
-        today = timezone.now().date()
-        queryset = Camps.objects.filter(openDate__lte=today, closeDate__gte=today)
-        response = CampsSerializer(queryset, many=True).data
-        for data in response:
-            if request.user.is_authenticated and CampsRegister.objects.filter(user=request.user, camp_id=data['id']):
-                data['edit'] = True
-            else:
-                data['edit'] = False
+    def post(self, request):
+        data = request.data
 
-        return Response(data=response, status=200)
+        id = data['id']
 
+        img = LeagueScheduleSerializer(LeagueSchedule.objects.filter(league=id).last()).data['img']
 
-class GetRegisterCampsView(APIView):
-    permission_classes = [IsAuthenticated]
+        teams = LeagueTeamStatsSchedule(LeagueTeamStats.objects.filter(leagues_register__league=id), many=True).data
+
+        data = {"img": img, "teams": teams}
+
+        return Response(data=data, status=200)
 
 
-class CreateRegisterCampsView(APIView):
-    permission_classes = [IsAuthenticated]
+class GetTeamStats(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request):
-        try:
-            user = request.user
-            data = request.data
-            camp = Camps.objects.get(id=data['camp_id'])
+        data = request.data
 
-            data.pop('camp_id')
+        id = data['id']
 
-            CampsRegister.objects.create(user=user, camp=camp, **data)
-            return Response(data="Registration Successful", status=200)
-        except Exception as e:
-            print(e)
-            return Response(data="Failed to register", status=400)
+        data = []
 
+        members = LeagueTeamMembers.objects.filter(leagues_register=id).values('name').annotate(dcount=Count('name'))
 
-class EditRegisterCampsView(APIView):
-    permission_classes = [IsAuthenticated]
+        for member in members:
+            name = member['name']
+
+            points = 0
+            rebounds = 0
+            assists = 0
+            num = 0
+
+            member_stats = LeagueTeamMembers.objects.filter(leagues_register=id, name=name)
+
+            for member_stat in member_stats:
+                points += member_stat.points
+                rebounds += member_stat.rebounds
+                assists += member_stat.assists
+                num += 1
+
+            if len(member_stats) > 0:
+                data.append({
+                    "name": member_stats[0].name,
+                    "points": points / num,
+                    "rebounds": rebounds / num,
+                    "assists": assists / num
+                })
+
+        return Response(data=data, status=200)

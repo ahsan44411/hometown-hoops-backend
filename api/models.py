@@ -109,3 +109,46 @@ class LeaguesRegister(models.Model):
     captain_last_name = models.CharField(max_length=1000, null=True, blank=True)
     email = models.CharField(max_length=1000, null=True, blank=True)
     cell_number = models.CharField(max_length=1000, null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "League Team Registration"
+
+    def __str__(self):
+        return str(self.team_name)
+
+
+class LeagueSchedule(models.Model):
+    league = models.OneToOneField(Leagues, on_delete=models.CASCADE)
+    img = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "League Schedule"
+
+    def __str__(self):
+        return str(self.league.name)
+
+
+class LeagueTeamStats(models.Model):
+    leagues_register = models.OneToOneField(LeaguesRegister, on_delete=models.CASCADE)
+    wins = models.IntegerField(null=True, blank=True)
+    losses = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "League Team Stats"
+
+    def __str__(self):
+        return str(self.leagues_register.league.name)
+
+
+class LeagueTeamMembers(models.Model):
+    leagues_register = models.ForeignKey(LeaguesRegister, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1000, null=True, blank=True)
+    points = models.IntegerField(default=0, null=True, blank=True)
+    rebounds = models.IntegerField(default=0, null=True, blank=True)
+    assists = models.IntegerField(default=0, null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "League Team Members"
+
+    def __str__(self):
+        return str(self.name)

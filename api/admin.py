@@ -25,38 +25,6 @@ class TournamentsRulesAdmin(admin.ModelAdmin):
 admin.site.register(Tournaments, TournamentsRulesAdmin)
 
 
-# class CampsRulesInline(admin.TabularInline):
-#     model = CampsRules
-#     extra = 0
-#
-#
-# class CampsRegisterInline(admin.TabularInline):
-#     model = CampsRegister
-#     extra = 0
-#     show_change_link = True
-#
-#
-# class CampsChildrenRegisterInline(admin.TabularInline):
-#     model = CampsChildRegister
-#     extra = 0
-#
-#
-# class CampsRegisterAdmin(admin.ModelAdmin):
-#     inlines = [
-#         CampsChildrenRegisterInline
-#     ]
-#
-#
-# class CampsRulesAdmin(admin.ModelAdmin):
-#     inlines = [
-#         CampsRulesInline,
-#         CampsRegisterInline,
-#     ]
-#
-#
-# admin.site.register(CampsChildRegister)
-# admin.site.register(Camps, CampsRulesAdmin)
-
 class CampsChildRegisterInline(NestedStackedInline):
     model = CampsChildRegister
     extra = 0
@@ -84,21 +52,40 @@ class CampsAdmin(NestedModelAdmin):
 admin.site.register(Camps, CampsAdmin)
 
 
-class LeaguesRulesInline(admin.TabularInline):
+class LeaguesRulesInline(NestedStackedInline):
     model = LeaguesRules
     extra = 0
+    fk_name = 'league'
 
 
-class LeaguesRegisterInline(admin.TabularInline):
+class LeagueTeamStatsInline(NestedStackedInline):
+    model = LeagueTeamStats
+    extra = 0
+    fk_name = 'leagues_register'
+
+
+class LeagueTeamMembersInline(NestedStackedInline):
+    model = LeagueTeamMembers
+    extra = 0
+    fk_name = 'leagues_register'
+
+
+class LeaguesRegisterInline(NestedStackedInline):
     model = LeaguesRegister
     extra = 0
+    fk_name = 'league'
+    inlines = [LeagueTeamStatsInline, LeagueTeamMembersInline]
 
 
-class LeaguesRulesAdmin(admin.ModelAdmin):
-    inlines = [
-        LeaguesRegisterInline,
-        LeaguesRulesInline,
-    ]
+class LeagueScheduleInline(NestedStackedInline):
+    model = LeagueSchedule
+    extra = 0
+    fk_name = 'league'
 
 
-admin.site.register(Leagues, LeaguesRulesAdmin)
+class LeagueAdmin(NestedModelAdmin):
+    model = Leagues
+    inlines = [LeaguesRulesInline, LeagueScheduleInline, LeaguesRegisterInline]
+
+
+admin.site.register(Leagues, LeagueAdmin)
